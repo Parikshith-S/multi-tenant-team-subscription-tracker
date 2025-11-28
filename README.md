@@ -1,0 +1,2 @@
+# Multi-Tenant-Team-Subscription-Tracker
+A B2B application where companies can track their software subscriptions. The key is Multi-Tenancy—Company A’s data must be totally invisible to Company B, even though they are in the same database.
