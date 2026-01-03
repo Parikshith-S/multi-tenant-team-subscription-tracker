@@ -3,7 +3,7 @@ import { auth } from '@clerk/nextjs/server';
 import { stripe } from '@/lib/stripe';
 
 export async function POST(req: Request) {
-  const { userId, orgId } = auth();
+  const { userId, orgId } = await auth();
   if (!userId || !orgId) return new NextResponse("Unauthorized", { status: 401 });
 
   const session = await stripe.checkout.sessions.create({
