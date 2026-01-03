@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    // FIX: Wrap the entire app in ClerkProvider
+    // CRITICAL FIX: The Provider must wrap the html tag
     <ClerkProvider>
       <html lang="en">
         <body className={inter.className}>{children}</body>
