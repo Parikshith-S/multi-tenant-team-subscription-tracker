@@ -1,20 +1,25 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
-// Protect all dashboard routes
-const isProtectedRoute = createRouteMatcher(['/dashboard(.*)']);
+const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)']);
+const isOnboarding = createRouteMatcher(['/onboarding']);
+// Stripe webhooks must never be blocked by auth
+const isWebhook = createRouteMatcher(['/api/webhooks(.*)']);
 
 export default clerkMiddleware(async (auth, req) => {
-    if (isProtectedRoute(req)) {
-        // 1. Await the auth() call to get user data
-        const { userId, redirectToSignIn } = await auth();
+    if (isPublicRoute(req) || isWebhook(req)) return;
 
-        // 2. Manually check if user is signed in
-        if (!userId) {
-            return redirectToSignIn();
-        }
+    const { userId, orgId, redirectToSignIn } = await auth();
+
+    if (!userId) {
+        return redirectToSignIn();
+    }
+
+    // Signed in but no org yet → force onboarding (skip if already there)
+    if (!orgId && !isOnboarding(req)) {
+        return NextResponse.redirect(new URL('/onboarding', req.url));
     }
 });
-
 
 export const config = {
     matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
