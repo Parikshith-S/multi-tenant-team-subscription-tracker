@@ -13,13 +13,22 @@ const EMPTY = {
     name: '',
     category: '',
     cost: '',
-    billing_cycle: 'monthly',
+    billing_cycle: 'monthly' as const,
     renewal_date: '',
-    status: 'active',
-} as const;
+    status: 'active' as const,
+};
+
+interface FormState {
+    name: string;
+    category: string;
+    cost: string;
+    billing_cycle: 'monthly' | 'annual';
+    renewal_date: string;
+    status: 'active' | 'canceled' | 'paused';
+}
 
 export default function ServiceFormModal({ open, service, onClose, onSaved }: Props) {
-    const [form, setForm] = useState({ ...EMPTY });
+    const [form, setForm] = useState<FormState>(EMPTY);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState('');
 
